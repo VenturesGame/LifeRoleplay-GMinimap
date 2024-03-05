@@ -2,12 +2,14 @@ local Terrain = {}
 
 Terrain.__index = Terrain
 
-function GMinimap.CreateTerrain()
+function GMinimap.CreateTerrain( bMinimap )
     local id, rt = SDrawUtils.AllocateRT()
 
     local instance = {
         rtId = id,
         rt = rt,
+
+        isMinimap = bMinimap,
 
         area = 5000,    -- map area captured by the terrain (source units)
         minZ = -1000,   -- min. height of the map terrain (source units)
@@ -17,7 +19,7 @@ function GMinimap.CreateTerrain()
         lastGridY = -1,
         lastCapturePos = Vector(),
         color = Color( 255, 255, 255 ),
-        voidColor = Color( 50, 50, 50 )
+        voidColor = Color( 27, 27, 27 )
     }
 
     return setmetatable( instance, Terrain )
@@ -154,10 +156,27 @@ local render = render
 local yawAng = Angle()
 local DrawTexturedRectRotated = SDrawUtils.DrawTexturedRectRotated
 
+-- from https://wiki.facepunch.com/gmod/surface.DrawPoly
+local function drawCircle( x, y, radius, seg )
+    local cir = {}
+
+    table.insert( cir, { x = x, y = y, u = 0.5, v = 0.5 } )
+    for i = 0, seg do
+        local a = math.rad( ( i / seg ) * -360 )
+        table.insert( cir, { x = x + math.sin( a ) * radius, y = y + math.cos( a ) * radius, u = math.sin( a ) / 2 + 0.5, v = math.cos( a ) / 2 + 0.5 } )
+    end
+
+    local a = math.rad( 0 ) -- This is needed for non absolute segment counts
+    table.insert( cir, { x = x + math.sin( a ) * radius, y = y + math.cos( a ) * radius, u = math.sin( a ) / 2 + 0.5, v = math.cos( a ) / 2 + 0.5 } )
+
+    surface.DrawPoly( cir )
+end
+
 function Terrain:Draw( x, y, w, h, pivotX, pivotY, origin, yaw )
     if not self.rtId then return end
 
     local size = m_max( w, h )
+    local ioffset = size / 2
 
     -- convert origin to a grid position, based on the area size
     local gridPos = Vector(
@@ -202,9 +221,15 @@ function Terrain:Draw( x, y, w, h, pivotX, pivotY, origin, yaw )
     render.SetStencilCompareFunction( 1 )
     render.SetStencilFailOperation( STENCIL_REPLACE )
 
-    -- "cut" the screen area where our terrain texture will be
-    -- visible according to the x, y, w, h arguments we received
-    render.ClearStencilBufferRectangle( x, y, x + w, y + h, 1 )
+    if self.isMinimap then
+        draw.NoTexture()
+        surface.SetDrawColor( color_white )
+        drawCircle( x + ioffset, y + ioffset, ioffset, 45 )
+    else
+         -- "cut" the screen area where our terrain texture will be
+        -- visible according to the x, y, w, h arguments we received
+        render.ClearStencilBufferRectangle( x, y, x + w, y + h, 1 )
+    end
 
     render.SetStencilCompareFunction( STENCIL_EQUAL )
     render.SetStencilFailOperation( STENCIL_KEEP )

@@ -1,8 +1,10 @@
 GMinimap:SetCanSeePlayerBlips( true )
 
+--[[
 concommand.Add( "gminimap_config", function()
     GMinimap.Config:OpenPanel()
 end )
+]]
 
 concommand.Add( "gminimap_landmarks", function()
     GMinimap:OpenLandmarks()
@@ -15,7 +17,9 @@ end )
 hook.Add( "PopulateToolMenu", "GMinimap.AddConfigMenu", function()
     spawnmenu.AddToolMenuOption( "Utilities", "GMinimap", "GMinimap_Config", "#gminimap.configure", "", "", function( panel )
         panel:ClearControls()
+        --[[
         panel:Button( "#gminimap.configure_minimap", "gminimap_config" )
+        ]]
         panel:Button( "#gminimap.landmarks", "gminimap_landmarks" )
     end )
 end )
@@ -48,7 +52,7 @@ function GMinimap:Activate()
         self:Deactivate()
     end
 
-    self.radar = GMinimap.CreateRadar()
+    self.radar = GMinimap.CreateRadar( true )
     self:UpdateLayout()
 
     hook.Add( "HUDPaint", "GMinimap.Draw", function()
@@ -189,8 +193,8 @@ function GMinimap:Draw()
     local x, y = self.radar.x, self.radar.y
     local w, h = self.radar.w, self.radar.h
 
-    SetDrawColor( self.Config.borderColor:Unpack() )
-    DrawRect( x - thickness, y - thickness, w + thickness * 2, h + thickness * 2 )
+    --SetDrawColor( self.Config.borderColor:Unpack() )
+    --DrawRect( x - thickness, y - thickness, w + thickness * 2, h + thickness * 2 )
 
     self.radar.origin = EyePos()
     self.radar.rotation = Angle( 0, EyeAngles().y, 0 )

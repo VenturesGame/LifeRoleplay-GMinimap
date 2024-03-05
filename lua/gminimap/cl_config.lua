@@ -3,9 +3,9 @@ local Config = GMinimap.Config or {}
 GMinimap.Config = Config
 
 function Config:Reset()
-    self.enable = true
+    self.enable = false
     self.toggleKey = KEY_NONE
-    self.expandKey = KEY_N
+    self.expandKey = KEY_NONE
 
     self.zoom = 1
     self.blipBaseSize = 0.015
@@ -14,15 +14,15 @@ function Config:Reset()
     -- take the width and height into consideration. This means that, for example,
     -- when y is 0, the top of the radar aligns with the top of the screen, whereas
     -- when y is 1, the bottom of the radar aligns with the bottom of the screen.
-    self.x = 0.5
-    self.y = 0.01
+    self.x = 0.015
+    self.y = 0.89
 
     -- sizes are relative to the screen height
-    self.width = 0.35
-    self.height = 0.12
+    self.width = 0.18
+    self.height = 0.18
 
-    self.borderColor = Color( 0, 0, 0, 255 )
-    self.borderThickness = 2
+    self.borderColor = Color( 27, 27, 27, 255 )
+    self.borderThickness = 0
 
     -- terrain
     self.terrainColor = Color( 255, 255, 255 )
@@ -41,9 +41,10 @@ function Config:Reset()
     self.armorColor = Color( 70, 144, 180 )
 end
 
+--[[
+
 function Config:Load()
     self:Reset()
-
     GMinimap.EnsureDataFolder()
 
     local rawData = file.Read( GMinimap.dataFolder .. "config.json", "DATA" ) or ""
@@ -418,3 +419,6 @@ function Config:OpenPanel()
         OnConfigChanged()
     end )
 end
+
+]]
+Config:Reset()

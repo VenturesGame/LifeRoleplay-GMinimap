@@ -2,12 +2,14 @@ local Radar = {}
 
 Radar.__index = Radar
 
-function GMinimap.CreateRadar()
+function GMinimap.CreateRadar( bMinimap )
     local instance = {
         x = 0,
         y = 0,
         w = 32,
         h = 32,
+
+        isMinimap = bMinimap,
 
         pivotX = 16, -- terrain and blips rotate around
         pivotY = 16, -- this 2d position on the radar
@@ -16,7 +18,7 @@ function GMinimap.CreateRadar()
         rotation = Angle(), -- rotation of the radar plane, relative to the world
         ratio = 50,         -- unit-to-pixel ratio (used for zooming)
 
-        terrain = GMinimap.CreateTerrain()
+        terrain = GMinimap.CreateTerrain( bMinimap )
     }
 
     return setmetatable( instance, Radar )
